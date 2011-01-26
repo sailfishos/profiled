@@ -1,0 +1,93 @@
+#!/usr/bin/make -f
+# -*- mode: sh -*- -----------------------------------------------
+# Debian rules for building profiled
+# ----------------------------------------------------------------
+#
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+.PHONY: build clean realclean install configure\
+	binary-indep binary-arch binary
+
+build:: build-stamp
+
+binary:: binary-indep binary-arch
+
+realclean:: clean
+
+configure::
+# nothing to do
+
+#----------------------------------------------------------------
+# compiling the software
+
+build-stamp: configure
+	dh_testdir
+	touch $@
+
+clean::
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	$(MAKE) clean
+
+#----------------------------------------------------------------
+# debian cleanup
+clean::
+	dh_testdir
+	dh_testroot
+	dh_clean
+
+#----------------------------------------------------------------
+# installation
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	$(MAKE) install-profiled       ROOT=debian/profiled
+	$(MAKE) install-libprofile     ROOT=debian/libprofile0
+	$(MAKE) install-libprofile-dev ROOT=debian/libprofile-dev
+	$(MAKE) install-libprofile-doc ROOT=debian/libprofile-doc
+	$(MAKE) install-profileclient  ROOT=debian/profileclient
+
+#----------------------------------------------------------------
+# architecture-independent files -> DEBIAN dirs
+
+binary-indep: install
+# nothing to do
+
+#----------------------------------------------------------------
+# architecture-dependent files -> DEBIAN dirs
+
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+#	dh_installexamples
+	dh_install -s
+	dh_installman
+## QUARANTINE 	# FIXME: star/stop profiled priorities & runlevels?
+## QUARANTINE 	dh_installinit --name=profiled -- start 03 2 3 5 . stop 97 0 1 6 .
+	dh_link
+	dh_strip --dbg-package=profiled\
+	         --dbg-package=profileclient\
+	         --dbg-package=libprofile0
+	dh_compress
+	dh_fixperms
+	dh_makeshlibs
+# 	dh_pysupport
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb

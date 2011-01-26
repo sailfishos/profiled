@@ -1,0 +1,9 @@
+interface: profiled
+type: dbus
+scope: Internal
+state: stable
+libs-pkg: libprofile0
+dev-pkg: libprofile-dev
+doc-type: doxygen
+doxygen-conf: Doxyfile
+

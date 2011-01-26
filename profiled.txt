@@ -1,0 +1,228 @@
+PROFILE DAEMON PLANNING
+
+Contents:
+
+    1 Client Side View
+
+        1.1 Control / Query API
+        1.2 Indication Messages
+
+    2 Server Side View
+
+        2.1 Static Configuration
+        2.2 Dynamic State
+        2.3 INI File Contents
+            2.3.1 Sample Content
+            2.3.2 Sections
+            2.3.3 Key names
+            2.3.4 Datatypes
+        2.4 Value Lookup
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+1 Client Side View
+==================
+
+
+1.1 Control / Query API
+-----------------------
+
+Implemented as dbus method calls.
+
+- get_profiles() -> string[]
+- has_profile(profile) -> bool
+- get_proflie() -> string
+- add_profile(profile, clone_from) -> bool
+- get_keys() -> string[]
+- get_value(profile, key) -> value
+- set_value(profile, key, value) -> bool
+- get_datatype(profile, key) -> string
+- get_values(profile) -> key_val_datatype[]
+
+1.2 Indication Messages
+-----------------------
+
+Implemented as dbus signals with:
+
+- profile name
+- is_current flag
+- list of (key,val) tuples affected
+
+Apart from some special cases (profile editor?) clients should
+ignore signals with unset is_current.
+
+Profile change creates signal with is_current flag set and
+values for all keys.
+
+Changes to individual keys should probably be pooled for a
+while and send in one burst.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+2 Server Side View
+==================
+
+
+2.1 Static Configuration
+------------------------
+
+Initial sane state for profile data is obtained by parsing ini
+files in /etc/profiles directory. These files are not modified
+by the daemon.
+
+The files are parsed in ascending ascii order, allowing us
+to impose priority convention similar to /etc/init?.d/ files.
+
+Basically the priority levels needed are something like:
+
+* Applications: Allows 3rd party apps to extend the set of keys
+  available and make them editable in profile editor too. Might
+  also be useful in develpment/debug phase of internally
+  developed applications.
+
+* Product: Allows us to have one control point where values from
+  product speficications are enforced.
+
+* Special cases: Might make some people happy if they can do
+  things like force alarms to be both audible and vibrating
+  regardless how the product specs evolve...
+
+Example:
+
+% ls /etc/profiles/
+
+10.clock.ini
+10.display.ini
+        :
+30.app_from_net.ini
+        :
+50.nokia-n810.ini
+90.myhacks.ini
+
+2.2 Dynamic State
+-----------------
+
+Any changes to profile data after the startup are kept separate
+from the static configuration. The delta information is
+mirrored to file: /var/profiles/values.ini.
+
+When active profile is changed, the name of the profile
+will be written to file: /var/profiles/current.
+
+The daemon pid is written at startup to: /var/profiles/pid.
+
+2.3 INI File Contents
+---------------------
+
+
+2.3.1 Sample Content
+....................
+
+Example:
+
+[fallback]
+system.callcoming.ringtone = /path/to/beepbeep.mp3
+system.callcoming.ringlevel = 3
+system.callcoming.vibrate = On
+system.callcoming.flash = On
+        :
+
+[datatype]
+
+system.callcoming.ringtone = Sound
+system.callcoming.ringlevel = Integer 0/5
+system.callcoming.vibrate = Boolean
+system.callcoming.flash = Boolean
+        :
+
+[meeting]
+system.callcoming.ringlevel = 1
+        :
+
+[silent]
+system.callcoming.ringlevel = 0
+system.callcoming.vibrate = Off
+        :
+
+2.3.2 Sections
+..............
+
+Required sections:
+
+  - fallback: sane values for all profile keys in use
+  - datatype: datatype specification for all keys
+
+Optional sections:
+
+  - <profile>: values that differ from fallback data
+  - override: allows overriding keys in all sections
+
+2.3.3 Key names
+...............
+
+The keys in ini files should be constructed in hierarchical
+manner - this allows interactive editors to show tree like
+views and keeps related items close to one another.
+
+2.3.4 Datatypes
+...............
+
+Basic structure:
+
+  dataspec:  <keyname> '=' <typename> [<rangespec> | <listspec>]
+  rangespec: <number>'/'<number>['/'<number>]
+  listspec:  <value> [value] ...
+
+Simple built in types:
+
+  - Integer
+  - String
+  - Double
+  - Boolean
+
+  These can be validated by the daemon if so decided.
+
+Custom types:
+
+  - Sound
+  - Image
+  - Color
+
+  From storage & transfer & daemon point of view these are strings,
+  they just provide hints for profile editor. For example Sound or
+  Image might be name of a builtin value or path to a file.
+
+Examples:
+
+  keytonevol = Integer 0/5
+    or
+  keytonevol = Integer 0 1 2 3 4 5
+
+  ringtonevol = Integer 0/100/25
+    or
+  ringtonevol = Integer 25 50 75 100
+
+  favfruit = String Apple Orange Banana
+
+  ringtone = Sound
+
+  background = Image
+
+  vibrating = Bool
+
+2.4 Value Lookup
+----------------
+
+The key queries are resolved in the following order:
+
+1. try lookup(dynamic, profile_name, key_name)
+   -> anything user has modified.
+
+2. try lookup(static, 'override', key_name)
+   -> special optional rules
+
+3. try lookup(static, profile_name, key_name)
+   -> actual profile
+
+4. try lookup(static, 'fallback', key_name)
+   -> sane values from fallback section

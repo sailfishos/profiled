@@ -1,0 +1,47 @@
+profiled (0.30.0-2) harmattan; urgency=low
+
+  * Bumping version number.
+
+ -- Telle-Tiia Pitkanen <telle-tiia.pitkanen@ixonos.com>  Tue, 14 Sep 2010 15:39:28 +0300
+
+profiled (0.30.0-1) harmattan; urgency=low
+
+  * Fixes: NB#186290 - Import profiled fixes from Fremantle to Harmattan
+
+ -- Miikka Kulmala <miikka.kulmala@ixonos.com>  Mon, 13 Sep 2010 16:00:15 +0300
+
+profiled (0.29.0-1) harmattan; urgency=low
+
+  * Fixes: NB#186406 - Added missing API file
+
+ -- jperala <juha.perala@ixonos.com>  Mon, 30 Aug 2010 10:12:00 +0300
+
+profiled (0.29.0-0) harmattan; urgency=low
+
+  * Increasiong version number 
+
+ -- narasimha <ext-narasimha.bommu@nokia.com>  Fri, 27 Aug 2010 11:21:46 +0300
+
+profiled (0.28.0-3) harmattan; urgency=low
+
+  * Fixes: NB#181521- Custom profile settings are not created by default and custon.ini also goes to backup
+
+ -- Juha Periala <juha.perala@ixonos.com>  Wed, 25 Aug 2010 13:43:48 +0300
+
+profiled (0.28.0-1) harmattan; urgency=low
+
+  * Fixes: NB#181521 - Unable to restore message alert tone
+
+ -- Telle-Tiia Pitkanen <telle-tiia.pitkanen@ixonos.com>  Mon, 16 Aug 2010 13:51:48 +0300
+
+profiled (0.11.0-1) harmattan; urgency=low
+
+  * Fixes: NB#149517 - If profile is changed from Status indicator menu then the profile is not updated to Profile settings view
+
+ --  Telle-Tiia Pitkanen <telle-tiia.pitkanen@ixonos.com>  Tue,  8 Dec 2009 12:21:02 +0200
+
+profiled (0.1.0-0) unstable; urgency=low
+
+  * Harmattan branch of profiled. Branched from Fremantle 0.0.17. 
+
+ --  Telle-Tiia Pitkanen <telle-tiia.pitkanen@ixonos.com>  Thu, 22 Oct 2009 15:20:12 +0300
