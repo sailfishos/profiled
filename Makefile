@@ -162,7 +162,7 @@ install-%-dll:
 
 install-%-inc:
 	$(if $<, install -m755 -d $(ROOT)$(INCDIR))
-	$(if $<, install -m755 $^ $(ROOT)$(INCDIR))
+	$(if $<, install -m644 $^ $(ROOT)$(INCDIR))
 
 install-%-backup-config:
 	$(if $<, install -m755 -d $(ROOT)$(BACKUP_DIR)/applications)
