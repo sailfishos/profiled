@@ -1,0 +1,122 @@
+codec.o: codec.c \
+  codec.h \
+  profiled_config.h
+
+confmon.o: confmon.c \
+  confmon.h \
+  database.h \
+  logging.h \
+  profiled_config.h \
+  profileval.h \
+  xutil.h
+
+connection.o: connection.c \
+  libprofile-internal.h \
+  libprofile.h \
+  logging.h \
+  profiled_config.h \
+  profileval.h
+
+database.o: database.c \
+  database.h \
+  inifile.h \
+  logging.h \
+  profiled_config.h \
+  profileval.h \
+  symtab.h \
+  unique.h \
+  xutil.h
+
+inifile.o: inifile.c \
+  inifile.h \
+  logging.h \
+  profiled_config.h \
+  symtab.h \
+  unique.h \
+  xutil.h
+
+libprofile.o: libprofile.c \
+  libprofile-internal.h \
+  libprofile.h \
+  logging.h \
+  profile_dbus.h \
+  profiled_config.h \
+  profileval.h \
+  xutil.h
+
+logging.o: logging.c \
+  logging.h \
+  profiled_config.h
+
+logging_client.o: logging_client.c \
+  logging.h \
+  profiled_config.h
+
+mainloop.o: mainloop.c \
+  confmon.h \
+  database.h \
+  logging.h \
+  mainloop.h \
+  profiled_config.h \
+  profileval.h \
+  server.h \
+  sighnd.h
+
+profileclient.o: profileclient.c \
+  libprofile-internal.h \
+  libprofile.h \
+  profiled_config.h \
+  profileval.h \
+  xutil.h
+
+profiled.o: profiled.c \
+  logging.h \
+  mainloop.h \
+  profiled_config.h
+
+profile-tracker.o: profile-tracker.c \
+  profile_dbus.h
+
+profileval.o: profileval.c \
+  profiled_config.h \
+  profileval.h \
+  xutil.h
+
+server.o: server.c \
+  codec.h \
+  database.h \
+  logging.h \
+  mainloop.h \
+  profile_dbus.h \
+  profiled_config.h \
+  profileval.h \
+  server.h
+
+sighnd.o: sighnd.c \
+  logging.h \
+  mainloop.h \
+  profiled_config.h \
+  sighnd.h
+
+symtab.o: symtab.c \
+  profiled_config.h \
+  symtab.h
+
+tracker.o: tracker.c \
+  codec.h \
+  libprofile-internal.h \
+  libprofile.h \
+  logging.h \
+  profile_dbus.h \
+  profiled_config.h \
+  profileval.h
+
+unique.o: unique.c \
+  profiled_config.h \
+  unique.h
+
+xutil.o: xutil.c \
+  logging.h \
+  profiled_config.h \
+  xutil.h
+
