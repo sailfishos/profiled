@@ -14,6 +14,7 @@ NAME ?= profiled
 ROOT ?= /tmp/test-$(NAME)
 
 PREFIX ?= /usr
+ETCDIR ?= /etc/profiled
 BINDIR ?= $(PREFIX)/bin
 DLLDIR ?= $(PREFIX)/lib
 LIBDIR ?= $(PREFIX)/lib
@@ -327,7 +328,11 @@ distclean:: ; $(RM) osso-backup/profiled.conf
 
 install-profiled-backup-restore:
 
-install-profiled:: $(addprefix install-profiled-, bin backup-config backupfw-config appkiller)
+install-profiled-ini: ini/10.meego_default.ini
+	install -m755 -d $(ROOT)$(ETCDIR)/
+	install -m755 ini/10.meego_default.ini $(ROOT)$(ETCDIR)/10.meego_default.ini
+
+install-profiled:: $(addprefix install-profiled-, bin backup-config backupfw-config appkiller ini)
 ifeq ($(USE_SYSTEM_BUS),y)
 	install -m755 -d $(ROOT)$(PREFIX)/share/dbus-1/system-services
 	install -m644 profiled.system.service \
