@@ -80,7 +80,7 @@ PKG_CFLAGS   := $(filter-out -I%, $(filter-out -D%, $(PKG_CFLAGS)))
 
 CPPFLAGS += $(PKG_CPPFLAGS)
 CFLAGS   += $(PKG_CFLAGS)
-LDLIBS   += $(PKG_LDLIBS)
+LDLIBS   += $(PKG_LDLIBS) -lrt
 
 ifeq ($(USE_SYSTEM_BUS),y)
 CPPFLAGS += -DUSE_SYSTEM_BUS
