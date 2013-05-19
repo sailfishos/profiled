@@ -1,0 +1,61 @@
+Name: profiled
+Summary: Profile daemon, manages user settings
+Version: 0.30.2.1
+Release: 1
+Group: System/System Control
+License: LGPLv2.1
+URL: http://meego.gitorious.org/meego-middleware/profiled
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Requires:
+    - profiled-settings
+Description: |
+    Gets default set of settings from profile data packages
+    that are installed on the device .
+    
+    Currently active profile and values within profile can
+    be changed using C language API implemented in libprofile.
+    
+    Changes to values are broadcast as D-Bus signals so that
+    active clients can be avare of changes without polling.
+
+PkgBR:
+    - doxygen
+PkgConfigBR:
+    - dbus-1
+    - dbus-glib-1
+    - glib-2.0
+Configure: none
+Builder: none
+SubPackages:
+    - Name: doc
+      Summary: API documentation for libprofile
+      Group: Documentation
+      Description: |
+          Doxygen generated files documenting the C language API used by
+          the client applications and the D-Bus API used by libprofile
+          for communication with profiled.
+
+    - Name: profileclient
+      AsWholeName: yes
+      Summary: Command line test tool for profiled
+      Group: Development/Tools
+      Description: |
+          The profileclient tool can be used to query/change
+          profiles and profile values.
+
+    - Name: settings-default
+      Summary: Default settings for profiled
+      Group: System/Libraries
+      Provides:
+        - profiled-settings
+      Description: |
+          Default settings for profiled.
+
+    - Name: devel
+      Summary: Development files for libprofile
+      Group: Development/Libraries
+      Description: |
+          C language headers for building client applications using
+          profiled library.
+
