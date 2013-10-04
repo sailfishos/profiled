@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Check that all files that should have the current version agree on it
+RES=0
+
+# Makefile takes version number from debian/changelog; and uses it
+# for generation pkg config files etc
+DEB_PATH=debian/changelog
+DEB_VERS=$(head -1 $DEB_PATH | sed -e 's/^.*(//' -e 's/).*$//')
+
+# rpm/profiled.spec should agree with debian/changelog
+RPM_PATH=${RPM_SOURCE_DIR:-rpm}/${RPM_PACKAGE_NAME:-profiled}.spec
+RPM_VERS=$(grep '^Version:' $RPM_PATH |sed -e 's/^.*:[[:space:]]*//')
+if [ "$RPM_VERS" != "$DEB_VERS" ]; then
+  echo >&2 "$DEB_PATH=$DEB_VERS vs $RPM_PATH=$RPM_VERS"
+  RES=1
+fi
+
+# If available, rpm/profiled.yaml should agree with debian/changelog
+YAML_PATH=${RPM_SOURCE_DIR:-rpm}/${RPM_PACKAGE_NAME:-profiled}.yaml
+if [ -f $YAML_PATH ]; then
+  YAML_VERS=$(grep '^Version:' $YAML_PATH |sed -e 's/^.*:[[:space:]]*//')
+  if [ "$YAML_VERS" != "$DEB_VERS" ]; then
+    echo >&2 "$DEB_PATH=$DEB_VERS vs $YAML_PATH=$YAML_VERS"
+    RES=1
+  fi
+fi
+
+if [ $RES != 0 ]; then
+  echo >&2 "Conflicting package versions"
+fi
+
+exit $RES
