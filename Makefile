@@ -138,10 +138,11 @@ mostlyclean::
 
 install:: $(addprefix install-,profiled profileclient libprofile libprofile-dev libprofile-doc)
 
-.PHONY: dox
-dox:
+doxygen.executed:
 	doxygen
-
+	touch doxygen.executed
+clean::
+	$(RM) doxygen.executed
 distclean::
 	$(RM) -r $(DOXYDIR)
 
@@ -380,11 +381,11 @@ clean::
 # libprofile-doc.deb
 # ----------------------------------------------------------------------------
 
-install-libprofile-doc-html: dox
+install-libprofile-doc-html: doxygen.executed
 	install -m755 -d $(ROOT)$(DEVDOCDIR)/html
 	install -m644 $(DOXYDIR)/html/* $(ROOT)$(DEVDOCDIR)/html/
 
-install-libprofile-doc-man:
+install-libprofile-doc-man: doxygen.executed
 	install -m755 -d $(ROOT)$(MANDIR)/man3
 	install -m644 $(DOXYDIR)/man/man3/* $(ROOT)$(MANDIR)/man3/
 
