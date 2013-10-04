@@ -304,7 +304,7 @@ inisec_emit(const inisec_t *self, FILE *file)
 
   if( fprintf(file, "%c%s%c\n\n", BRA, self->is_name, KET) < 0 ) goto cleanup;
 
-  for( int i = 0; i < self->is_values.st_count; ++i )
+  for( size_t i = 0; i < self->is_values.st_count; ++i )
   {
     if( inival_emit(self->is_values.st_elem[i], file) < 0 ) goto cleanup;
   }
@@ -408,7 +408,7 @@ inifile_delete_cb(void *self)
  * ------------------------------------------------------------------------- */
 
 int
-inifile_has_section(inifile_t *self, const char *sec)
+inifile_has_section(const inifile_t *self, const char *sec)
 {
   return symtab_lookup(&self->if_sections, sec) != 0;
 }
@@ -418,7 +418,7 @@ inifile_has_section(inifile_t *self, const char *sec)
  * ------------------------------------------------------------------------- */
 
 inisec_t *
-inifile_get_section(inifile_t *self, const char *sec)
+inifile_get_section(const inifile_t *self, const char *sec)
 {
   return symtab_lookup(&self->if_sections, sec);
 }
@@ -464,7 +464,10 @@ inifile_setfmt(inifile_t *self, const char *sec, const char *key, const char *fm
   char *val = 0;
 
   va_start(va, fmt);
-  vasprintf(&val, fmt, va);
+  if( vasprintf(&val, fmt, va) < 0 )
+  {
+    val = 0;
+  }
   va_end(va);
 
   if( val != 0 )
@@ -623,7 +626,7 @@ inifile_save_to_memory(const inifile_t *self, char **pdata, size_t *psize,
       break;
     }
 
-    long todo = minsize - size;
+    size_t todo = minsize - (size_t)size;
 
     if( todo >= sizeof pad ) todo = sizeof pad - 1;
 
@@ -778,6 +781,8 @@ inifile_get_section_names(const inifile_t *self, size_t *pcount)
 static int inifile_get_value_keys_cb(const inisec_t *sec,
                                      const inival_t *val, void *aptr)
 {
+  (void)sec;
+
   unique_t *unique = aptr;
   unique_add(unique, val->iv_key);
   return 0;
@@ -809,4 +814,33 @@ void
 inifile_to_csv(const inifile_t *self)
 {
   inifile_scan_values(self, inifile_to_csv_cb, stderr);
+}
+
+/* ------------------------------------------------------------------------- *
+ * inifile_get_section_keys
+ * ------------------------------------------------------------------------- */
+
+char **
+inifile_get_section_keys(const inifile_t *self, const char *sec_name,
+			 int *pcount)
+{
+  char **res = 0;
+  int    cnt = 0;
+
+  inisec_t *sec = inifile_get_section(self, sec_name);
+
+  if( sec )
+  {
+    res = calloc(sec->is_values.st_count + 1, sizeof *res);
+    for( size_t i = 0; i < sec->is_values.st_count; ++i )
+    {
+      inival_t *val =  sec->is_values.st_elem[i];
+      res[cnt++] = strdup(val->iv_key);
+    }
+    res[cnt] = 0;
+  }
+
+  if( pcount ) *pcount = cnt;
+
+  return res;
 }

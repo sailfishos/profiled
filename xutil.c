@@ -85,12 +85,12 @@ xloadfile(const char *path, char **pdata, size_t *psize)
 
   if( (data = calloc(size+1, 1)) == 0 )
   {
-    log_err("%s: load/calloc %d: %s\n", path, size, strerror(errno));
+    log_err("%s: load/calloc %zd: %s\n", path, size, strerror(errno));
     goto cleanup;
   }
 
   errno = 0;
-  if( read(file, data, size) != size )
+  if( read(file, data, size) != (ssize_t)size )
   {
     log_warning("%s: load/read: %s\n", path, strerror(errno));
     goto cleanup;
@@ -259,4 +259,23 @@ xcheckstats(const char *path, const struct stat *old)
   }
 
   return ok;
+}
+
+/* ------------------------------------------------------------------------- *
+ * xstrfmt  --  bit like asprintf, but without undefined state on error
+ * ------------------------------------------------------------------------- */
+
+char *
+xstrfmt(const char *fmt, ...)
+{
+  char *res = 0;
+  va_list va;
+  va_start(va, fmt);
+  if( vasprintf(&res, fmt, va) < 0 )
+  {
+    res = 0;
+  }
+  va_end(va);
+
+  return res;
 }

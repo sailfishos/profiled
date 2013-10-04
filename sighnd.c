@@ -126,6 +126,8 @@ static
 gboolean
 sighnd_pipe_rx_cb(GIOChannel *channel, GIOCondition condition, gpointer data)
 {
+  (void)channel; (void)condition; (void)data;
+
   int sig = 0;
 
   if( read(sighnd_pipe[0], &sig, sizeof sig) == sizeof sig )

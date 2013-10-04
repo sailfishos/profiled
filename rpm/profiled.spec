@@ -84,6 +84,7 @@ profiled library.
 
 %build
 # >> build pre
+make %{_smp_mflags}
 # << build pre
 
 

@@ -54,15 +54,16 @@ int  xsavefile(const char *path, int mode, const void *data, size_t size);
 int  xcyclefiles(const char *temp, const char *path, const char *back);
 void xfetchstats(const char *path, struct stat *cur);
 int  xcheckstats(const char *path, const struct stat *old);
+char *xstrfmt(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 
 static inline int xiswhite(int c)
 {
-  return (c > 0u) && (c <= 32u);
+  return (c > 0) && (c <= 32);
 }
 
 static inline int xisblack(int c)
 {
-  return (c > 32u);
+  return (unsigned)c > 32u;
 }
 
 static inline char *xstripall(char *str)

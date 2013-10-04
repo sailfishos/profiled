@@ -500,6 +500,8 @@ server_filter(DBusConnection *conn,
               DBusMessage *msg,
               void *user_data)
 {
+  (void)user_data;
+
   DBusHandlerResult   result    = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   const char         *interface = dbus_message_get_interface(msg);
   const char         *member    = dbus_message_get_member(msg);
@@ -748,6 +750,8 @@ static
 gboolean
 server_changes_broadcast_cb(gpointer data)
 {
+  (void)data;
+
 // QUARANTINE   debugf("@ %s\n", __FUNCTION__);
 
   const char *current  = database_get_profile();
@@ -852,6 +856,8 @@ static
 gboolean
 server_restart_idle_cb(gpointer data)
 {
+  (void)data;
+
 // QUARANTINE   log_debug("@%s", __FUNCTION__);
   server_restart_id = 0;
 
@@ -865,6 +871,8 @@ static
 gboolean
 server_restart_delay_cb(gpointer data)
 {
+  (void)data;
+
 // QUARANTINE   log_debug("@%s", __FUNCTION__);
 
   // wait for idle

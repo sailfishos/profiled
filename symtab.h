@@ -64,7 +64,7 @@ struct symtab_t
 };
 
 void     *symtab_insert   (symtab_t *self, const void *key);
-void     *symtab_lookup   (symtab_t *self, const void *key);
+void     *symtab_lookup   (const symtab_t *self, const void *key);
 void      symtab_remove   (symtab_t *self, const void *key);
 void      symtab_clear    (symtab_t *self);
 void      symtab_ctor     (symtab_t *self,

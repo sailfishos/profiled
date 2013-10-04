@@ -230,7 +230,10 @@ int main(int argc, char **argv)
     switch (opt)
     {
     case 'h':
-      write(STDOUT_FILENO, usage, sizeof usage - 1);
+      if( write(STDOUT_FILENO, usage, sizeof usage - 1) == -1 )
+      {
+	// we do not really care, but keep static analyzers happy
+      }
       exit(0);
 
     case 'p':
