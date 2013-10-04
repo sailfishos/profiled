@@ -1,3 +1,10 @@
+profiled (1.0.0) nemomobile; urgency=low
+
+  * [packaging] Compile from %build section
+  * [profiled] Add "general" profile to inheritance path
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Fri, 04 Oct 2013 17:18:39 +0300
+
 profiled (0.30.1-1) harmattan; urgency=low
 
   * Increasing version number
