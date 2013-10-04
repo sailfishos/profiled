@@ -76,23 +76,12 @@ tracker_filter(DBusConnection *conn,
                DBusMessage *msg,
                void *user_data)
 {
+  (void)conn; (void)user_data;
+
   DBusHandlerResult   result    = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   const char         *interface = dbus_message_get_interface(msg);
   const char         *member    = dbus_message_get_member(msg);
   const char         *object    = dbus_message_get_path(msg);
-  int                 type      = dbus_message_get_type(msg);
-  const char         *typename  = "UNKNOWN";
-
-  switch( type )
-  {
-  case DBUS_MESSAGE_TYPE_INVALID:       typename = "INVALID"; break;
-  case DBUS_MESSAGE_TYPE_METHOD_CALL:   typename = "M-CALL"; break;
-  case DBUS_MESSAGE_TYPE_METHOD_RETURN: typename = "M-RET"; break;
-  case DBUS_MESSAGE_TYPE_ERROR:         typename = "ERROR"; break;
-  case DBUS_MESSAGE_TYPE_SIGNAL:        typename = "SIGNAL"; break;
-  }
-
-  //printf("%s: %s, %s, %s\n", typename, interface, object, member);
 
   if( !interface || !member || !object )
   {
@@ -207,6 +196,8 @@ static GMainLoop  *tracker_mainloop = 0;
 
 int main(int ac, char **av)
 {
+  (void)ac; (void)av;
+
   int exit_code = EXIT_FAILURE;
 
   tracker_mainloop = g_main_loop_new(NULL, FALSE);

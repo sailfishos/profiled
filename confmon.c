@@ -179,6 +179,8 @@ static
 gboolean
 confmon_do_reload(gpointer aptr)
 {
+  (void)aptr;
+
   OUTPUT_FUNCTION_NAME
 
   confmon_timeout = 0;
@@ -229,6 +231,8 @@ confmon_inotify_cb(GIOChannel   *source,
                         GIOCondition  condition,
                         gpointer      data)
 {
+  (void)source; (void)condition; (void)data;
+
   OUTPUT_FUNCTION_NAME
 
   int disable = 0;
@@ -256,11 +260,11 @@ confmon_inotify_cb(GIOChannel   *source,
   else
   {
     eve = lea(buf, 0);
-    while( n >= sizeof *eve )
+    while( n >= (int)sizeof *eve )
     {
       int k = sizeof *eve + eve->len;
 
-      if( (k < sizeof *eve) || (k > n) )
+      if( (k < (int)sizeof *eve) || (k > n) )
       {
         break;
       }

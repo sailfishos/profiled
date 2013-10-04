@@ -304,7 +304,7 @@ inisec_emit(const inisec_t *self, FILE *file)
 
   if( fprintf(file, "%c%s%c\n\n", BRA, self->is_name, KET) < 0 ) goto cleanup;
 
-  for( int i = 0; i < self->is_values.st_count; ++i )
+  for( size_t i = 0; i < self->is_values.st_count; ++i )
   {
     if( inival_emit(self->is_values.st_elem[i], file) < 0 ) goto cleanup;
   }
@@ -464,7 +464,10 @@ inifile_setfmt(inifile_t *self, const char *sec, const char *key, const char *fm
   char *val = 0;
 
   va_start(va, fmt);
-  vasprintf(&val, fmt, va);
+  if( vasprintf(&val, fmt, va) < 0 )
+  {
+    val = 0;
+  }
   va_end(va);
 
   if( val != 0 )
@@ -623,7 +626,7 @@ inifile_save_to_memory(const inifile_t *self, char **pdata, size_t *psize,
       break;
     }
 
-    long todo = minsize - size;
+    size_t todo = minsize - (size_t)size;
 
     if( todo >= sizeof pad ) todo = sizeof pad - 1;
 
@@ -778,6 +781,8 @@ inifile_get_section_names(const inifile_t *self, size_t *pcount)
 static int inifile_get_value_keys_cb(const inisec_t *sec,
                                      const inival_t *val, void *aptr)
 {
+  (void)sec;
+
   unique_t *unique = aptr;
   unique_add(unique, val->iv_key);
   return 0;

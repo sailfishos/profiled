@@ -152,7 +152,7 @@ symtab_clear(symtab_t *self)
 {
   if( self->st_del != 0 )
   {
-    for( int i = 0; i < self->st_count; ++i )
+    for( size_t i = 0; i < self->st_count; ++i )
     {
       self->st_del(self->st_elem[i]);
     }

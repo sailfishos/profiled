@@ -300,6 +300,8 @@ profile_tracker_filter(DBusConnection *conn,
                        DBusMessage *msg,
                        void *user_data)
 {
+  (void)conn; (void)user_data;
+
   DBusHandlerResult   result    = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   const char         *interface = dbus_message_get_interface(msg);
   const char         *member    = dbus_message_get_member(msg);

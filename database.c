@@ -767,6 +767,8 @@ static
 gboolean
 database_save_retry_cb(gpointer data)
 {
+  (void)data;
+
   if( database_save_now() == -1 )
   {
       return TRUE;
@@ -813,6 +815,8 @@ static
 gboolean
 database_save_later_cb(gpointer data)
 {
+  (void)data;
+
   database_save_later_id = 0;
   database_save_request();
   return FALSE;
@@ -837,13 +841,12 @@ database_save_later(int secs)
 int
 database_init(void)
 {
-  asprintf(&current_path, "%s/%s", datadir(), CURRENT_TXT);
-  asprintf(&current_work, "%s.tmp", current_path);
-  asprintf(&current_back, "%s.bak", current_path);
-
-  asprintf(&custom_path, "%s/%s", datadir(), CUSTOM_INI);
-  asprintf(&custom_work, "%s.tmp", custom_path);
-  asprintf(&custom_back, "%s.bak", custom_path);
+  current_path = xstrfmt("%s/%s", datadir(), CURRENT_TXT);
+  current_work = xstrfmt("%s.tmp", current_path);
+  current_back = xstrfmt("%s.bak", current_path);
+  custom_path  = xstrfmt("%s/%s", datadir(), CUSTOM_INI);
+  custom_work  = xstrfmt("%s.tmp", custom_path);
+  custom_back  = xstrfmt("%s.bak", custom_path);
 
   xstrset(&database_previous, *database_builtins);
   xstrset(&database_current,  *database_builtins);
@@ -1388,7 +1391,7 @@ database_get_changed_values(const char *profile, int *pcount)
   size_t        cnt = 0;
   profileval_t *res = calloc(keys+1, sizeof *res);
 
-  for( int i = 0; i < keys; ++i )
+  for( size_t i = 0; i < keys; ++i )
   {
     // key is transferred, rest is strdup:ed
     char       *k = key[i];

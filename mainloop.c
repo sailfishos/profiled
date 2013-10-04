@@ -80,6 +80,7 @@ mainloop_stop(void)
 int
 mainloop_run(int argc, char* argv[])
 {
+  (void)argc; (void)argv;
   int exit_code = EXIT_FAILURE;
 
   log_debug("STARTUP");

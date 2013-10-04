@@ -58,9 +58,10 @@ static const char *get_progname(void)
 {
   static char *progname = 0;
 
-  if( progname == 0 )
+  if( !progname )
   {
     char tmp[256];
+
     memset(tmp, 0, sizeof tmp);
     if( readlink("/proc/self/exe", tmp, sizeof tmp - 1) > 0 )
     {
@@ -69,11 +70,16 @@ static const char *get_progname(void)
       if( s && *s ) progname = strdup(s);
     }
 
-    if( progname == 0 )
+    if( !progname )
     {
-      asprintf(&progname, "unkn%d", (int)getpid());
+      if( asprintf(&progname, "unkn%d", (int)getpid()) < 0 )
+      {
+	// we're not going to free this anyway
+	progname = (char *)"unknown";
+      }
     }
   }
+
   return progname;
 }
 
@@ -144,6 +150,8 @@ static
 void
 log_emit_stderr(int level, const char *fmt, va_list va)
 {
+  (void)level;
+
   char msg[256];
   char *eol;
 
