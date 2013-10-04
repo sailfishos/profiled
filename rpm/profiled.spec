@@ -84,6 +84,7 @@ profiled library.
 
 %build
 # >> build pre
+make %{?jobs:-j%jobs}
 # << build pre
 
 
