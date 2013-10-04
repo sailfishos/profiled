@@ -159,7 +159,7 @@ log_emit_stderr(int level, const char *fmt, va_list va)
 
   eol = strrchr(msg, '\n');
   dprintf(STDERR_FILENO, "%s[%d]: %s%s",
-          get_progname(), getpid(), msg, (eol && eol[1]) ? "\n" : "");
+          get_progname(), getpid(), msg, (!eol || eol[1]) ? "\n" : "");
 
 }
 

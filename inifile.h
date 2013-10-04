@@ -135,8 +135,8 @@ void         inifile_dtor             (inifile_t *self);
 inifile_t  * inifile_create           (void);
 void         inifile_delete           (inifile_t *self);
 void         inifile_delete_cb        (void *self);
-int          inifile_has_section      (inifile_t *self, const char *sec);
-inisec_t   * inifile_get_section      (inifile_t *self, const char *sec);
+int          inifile_has_section      (const inifile_t *self, const char *sec);
+inisec_t   * inifile_get_section      (const inifile_t *self, const char *sec);
 inisec_t   * inifile_add_section      (inifile_t *self, const char *sec);
 void         inifile_del_section      (inifile_t *self, const char *sec);
 void         inifile_set              (inifile_t *self, const char *sec, const char *key, const char *val);
@@ -154,6 +154,7 @@ inival_t   * inifile_scan_values      (const inifile_t *self, int (*cb)(const in
 char       **inifile_get_section_names(const inifile_t *self, size_t *pcount);
 char       **inifile_get_value_keys   (const inifile_t *self, size_t *pcount);
 void         inifile_to_csv           (const inifile_t *self);
+char       **inifile_get_section_keys (const inifile_t *self, const char *sec_name, int *pcount);
 
 # ifdef __cplusplus
 };

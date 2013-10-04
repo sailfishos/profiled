@@ -408,7 +408,7 @@ inifile_delete_cb(void *self)
  * ------------------------------------------------------------------------- */
 
 int
-inifile_has_section(inifile_t *self, const char *sec)
+inifile_has_section(const inifile_t *self, const char *sec)
 {
   return symtab_lookup(&self->if_sections, sec) != 0;
 }
@@ -418,7 +418,7 @@ inifile_has_section(inifile_t *self, const char *sec)
  * ------------------------------------------------------------------------- */
 
 inisec_t *
-inifile_get_section(inifile_t *self, const char *sec)
+inifile_get_section(const inifile_t *self, const char *sec)
 {
   return symtab_lookup(&self->if_sections, sec);
 }
@@ -814,4 +814,33 @@ void
 inifile_to_csv(const inifile_t *self)
 {
   inifile_scan_values(self, inifile_to_csv_cb, stderr);
+}
+
+/* ------------------------------------------------------------------------- *
+ * inifile_get_section_keys
+ * ------------------------------------------------------------------------- */
+
+char **
+inifile_get_section_keys(const inifile_t *self, const char *sec_name,
+			 int *pcount)
+{
+  char **res = 0;
+  int    cnt = 0;
+
+  inisec_t *sec = inifile_get_section(self, sec_name);
+
+  if( sec )
+  {
+    res = calloc(sec->is_values.st_count + 1, sizeof *res);
+    for( size_t i = 0; i < sec->is_values.st_count; ++i )
+    {
+      inival_t *val =  sec->is_values.st_elem[i];
+      res[cnt++] = strdup(val->iv_key);
+    }
+    res[cnt] = 0;
+  }
+
+  if( pcount ) *pcount = cnt;
+
+  return res;
 }

@@ -95,7 +95,7 @@ symtab_insert(symtab_t *self, const void *key)
  * ------------------------------------------------------------------------- */
 
 void *
-symtab_lookup(symtab_t *self, const void *key)
+symtab_lookup(const symtab_t *self, const void *key)
 {
   size_t l = 0;
   size_t h = self->st_count;

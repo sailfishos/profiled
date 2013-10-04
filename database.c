@@ -78,7 +78,6 @@ static char *database_previous = 0; // previously this was active
 
 static inifile_t *database_static  = 0; // loaded from CONFIG_DIR/*.ini
 static inifile_t *database_custom  = 0; // stored at CUSTOM_INI
-static inifile_t *database_changes = 0; // accumulated changes
 
 static char *custom_work = 0; // path to custom values save file
 static char *custom_path = 0;
@@ -108,6 +107,8 @@ char const* const database_builtins[] =
   "outdoors",
   0
 };
+
+static void database_generate_changes(void);
 
 /* ========================================================================= *
  * Module Callbacks
@@ -279,27 +280,56 @@ static const char *default_(const char *profile, const char *key)
 
 static const char *current_(const char *profile, const char *key)
 {
+  static const char general[] = "general";
+
   /* - - - - - - - - - - - - - - - - - - - *
    * profile lookup order:
    * 1. config: "override"
    * 2. custom: caller provided
    * 3. config: caller provided
-   * 4. config: "fallback"
+   * 4. custom: "general"
+   * 5. config: "general"
+   * 6. config: "fallback"
    * - - - - - - - - - - - - - - - - - - - */
 
   const char *res = 0;
 
-  if( (res = override_(key)) == 0 )
+  if( (res = override_(key)) )
   {
-    // empty custom value -> use default
-    if( xstrnull(res = custom_(profile, key)) )
+    // have override value
+    goto cleanup;
+  }
+
+  if( !xstrnull(res = custom_(profile, key)) )
+  {
+    // have non-empty custom value for requested profile
+    goto cleanup;
+  }
+
+  if( (res = config_(profile, key)) )
+  {
+    // have non-empty default value for requested profile
+    goto cleanup;
+  }
+
+  if( !xstrsame(profile, general) )
+  {
+    if( !xstrnull(res = custom_(general, key)) )
     {
-      if( (res = config_(profile, key)) == 0 )
-      {
-        res = fallback_(key);
-      }
+      // have non-empty custom value for general profile
+      goto cleanup;
+    }
+    if( (res = config_(general, key)) )
+    {
+      // have non-empty default value for general profile
+      goto cleanup;
     }
   }
+
+  // use the fallback value
+  res = fallback_(key);
+
+cleanup:
 
   return res;
 }
@@ -495,7 +525,7 @@ database_save_current(void)
   }
 
   // create new content
-  if( asprintf(&new_data, "%s\n", database_current) == -1 )
+  if( !(new_data = xstrfmt("%s\n", database_current)) )
   {
     goto cleanup;
   }
@@ -578,116 +608,18 @@ database_load(void)
 }
 
 /* ------------------------------------------------------------------------- *
- * database_scan_profiles  --  accumulate unique profile names
- * ------------------------------------------------------------------------- */
-
-static int
-database_scan_profiles_cb(const inisec_t *s, void *aptr)
-{
-  unique_t *uniq = aptr;
-  if( !database_is_special(s->is_name) )
-  {
-    unique_add(uniq, s->is_name);
-  }
-  return 0;
-}
-
-static
-void
-database_scan_profiles(unique_t *uniq, inifile_t *ini)
-{
-  inifile_scan_sections(ini, database_scan_profiles_cb, uniq);
-
-  for( int i = 0; database_builtins[i]; ++i )
-  {
-    unique_add(uniq, database_builtins[i]);
-  }
-}
-
-/* ------------------------------------------------------------------------- *
- * database_scan_keys  --  accumulate unique profile key names
- * ------------------------------------------------------------------------- */
-
-static int
-database_scan_keys_cb(const inisec_t *s, const inival_t *v, void *aptr)
-{
-  unique_t *uniq = aptr;
-  if( strcmp(s->is_name, DATATYPE) )
-  {
-    unique_add(uniq, v->iv_key);
-  }
-  return 0;
-}
-
-static
-void
-database_scan_keys(unique_t *uniq, inifile_t *ini)
-{
-  inifile_scan_values(ini, database_scan_keys_cb, uniq);
-}
-
-/* ------------------------------------------------------------------------- *
  * database_reload  --  reload configurarion files & broadcast changes
  * ------------------------------------------------------------------------- */
 
 void
 database_reload(void)
 {
-  unique_t  *profiles = unique_create();
-  unique_t  *keys     = unique_create();
-  inifile_t *values   = inifile_create();
-
-  // scan old value set
-
-  database_scan_keys(keys, database_static);
-  database_scan_keys(keys, database_custom);
-
-  database_scan_profiles(profiles, database_static);
-  database_scan_profiles(profiles, database_custom);
-
-  for( size_t p = 0; p < profiles->un_count; ++p )
-  {
-    const char *profile = profiles->un_string[p];
-
-    for( size_t k = 0; k < keys->un_count; ++k )
-    {
-      const char *key = keys->un_string[k];
-      const char *val = database_get_value(profile, key, "");
-      inifile_set(values, profile, key, val);
-    }
-  }
-
   // reload config files
 
   inifile_delete(database_static);
   database_static  = inifile_create();
   database_load_config();
 
-  database_scan_keys(keys, database_static);
-  database_scan_profiles(profiles, database_static);
-
-  // diff value sets
-
-  int changes = 0;
-
-  for( size_t p = 0; p < profiles->un_count; ++p )
-  {
-    const char *profile = profiles->un_string[p];
-
-    for( size_t k = 0; k < keys->un_count; ++k )
-    {
-      const char *key = keys->un_string[k];
-      const char *val = database_get_value(profile, key, "");
-      const char *old = inifile_get(values, profile, key, "");
-
-      if( !xstrsame(val, old) )
-      {
-        // mark changed values
-        inifile_set(database_changes, profile, key, val);
-        changes = 1;
-      }
-    }
-  }
 
   if( !database_has_profile(database_current) )
   {
@@ -695,21 +627,10 @@ database_reload(void)
     // configuration updates happened to get
     // rid of the currently active profile
     xstrset(&database_current, *database_builtins);
-    changes = 1;
   }
-
-  // cleanup
-
-  unique_delete(profiles);
-  unique_delete(keys);
-  inifile_delete(values);
 
   // send change notification if needed
-
-  if( changes )
-  {
-    database_notify_changes();
-  }
+  database_notify_changes();
 }
 
 /* ------------------------------------------------------------------------- *
@@ -853,7 +774,6 @@ database_init(void)
 
   database_static  = inifile_create();
   database_custom  = inifile_create();
-  database_changes = inifile_create();
 
   database_load();
 
@@ -861,6 +781,10 @@ database_init(void)
   database_save_now();
 
   xstrset(&database_previous, database_current);
+
+  // generate and discard initial changeset
+  database_generate_changes();
+  database_clear_changes();
 
   return 0;
 }
@@ -884,7 +808,6 @@ database_quit(void)
 
   inifile_delete(database_static),  database_static  = 0;
   inifile_delete(database_custom),  database_custom  = 0;
-  inifile_delete(database_changes), database_changes = 0;
 
   xstrset(&custom_path, 0);
   xstrset(&custom_work, 0);
@@ -1182,8 +1105,7 @@ database_set_value(const char *profile,
 
         if( database_is_writable(key) )
         {
-          // add to changeset and notify
-          inifile_set(database_changes, profile, key, use);
+          // notify changes
           database_notify_changes();
         }
         else
@@ -1261,6 +1183,10 @@ database_free_values(profileval_t *values)
   profileval_free_vector(values);
 }
 
+static inifile_t *bc_state_prev = 0;
+static inifile_t *bc_state_curr = 0;
+static inifile_t *bc_state_diff = 0;
+
 /* ------------------------------------------------------------------------- *
  * database_clear_changes
  * ------------------------------------------------------------------------- */
@@ -1270,8 +1196,7 @@ database_clear_changes(void)
 {
   /* Clear changeset */
   xstrset(&database_previous, database_current);
-  inifile_delete(database_changes);
-  database_changes = inifile_create();
+  inifile_delete(bc_state_diff), bc_state_diff = 0;
 
   /* Save state information, if it fails it will be
    * periodically retried until it succeeds */
@@ -1279,41 +1204,97 @@ database_clear_changes(void)
 }
 
 /* ------------------------------------------------------------------------- *
- * database_get_changed_profiles
+ * database_generate_changes
  * ------------------------------------------------------------------------- */
 
-static int
-database_get_changed_profiles_cb(const inisec_t *s, void *aptr)
+static void
+database_generate_changes(void)
 {
-  unique_t *unique = aptr;
-  if( database_has_profile(s->is_name) )
+  char **prof = 0;
+  char **key  = 0;
+
+  if( bc_state_diff )
   {
-    unique_add(unique, s->is_name);
+    // already have delta set
+    goto cleanup;
   }
-  return 0;
+
+  inifile_delete(bc_state_prev);
+  bc_state_prev = bc_state_curr ?: inifile_create();
+  bc_state_curr = inifile_create();
+  bc_state_diff = inifile_create();
+
+  /* Scan changeset for keys with changed values.
+   *
+   * Special case: if the active profile has changed,
+   * values of all keys will be included
+   *
+   * Keys that are no longer available (due to removal of
+   * configuration files for example) will be listed
+   * with empty value and datatype.
+   */
+
+  // accumulate changed values
+  prof = database_get_profiles(0);
+  key  = database_get_keys(0);
+  for( int p = 0; prof && prof[p]; ++p )
+  {
+    int force = (!xstrsame(database_current, database_previous) &&
+		 xstrsame(database_current, prof[p]));
+
+    for( int k = 0; key && key[k]; ++k )
+    {
+      const char *v_curr = database_get_value(prof[p], key[k], "");
+      const char *v_prev = inifile_get(bc_state_prev, prof[p], key[k], "");
+      inifile_set(bc_state_curr, prof[p], key[k], v_curr);
+      if( force || !xstrsame(v_prev, v_curr) )
+      {
+	inifile_set(bc_state_diff, prof[p], key[k], v_curr);
+      }
+    }
+  }
+  database_free_keys(key), key = 0;
+  database_free_profiles(prof), prof = 0;
+
+  // accumulate dropped values
+  prof = inifile_get_section_names(bc_state_prev, 0);
+  key  = inifile_get_value_keys(bc_state_prev, 0);
+  for( int p = 0; prof && prof[p]; ++p )
+  {
+    for( int k = 0; key && key[k]; ++k )
+    {
+      const char *v_prev = inifile_get(bc_state_prev, prof[p], key[k], 0);
+      const char *v_curr = inifile_get(bc_state_curr, prof[p], key[k], 0);
+      if( v_prev && !v_curr )
+      {
+	inifile_set(bc_state_diff, prof[p], key[k], "");
+      }
+    }
+  }
+  database_free_keys(key), key = 0;
+  database_free_profiles(prof), prof = 0;
+
+cleanup:
+  return;
 }
+
+/* ------------------------------------------------------------------------- *
+ * database_get_changed_profiles
+ * ------------------------------------------------------------------------- */
 
 char **
 database_get_changed_profiles(int *pcount)
 {
-  /* Scan section names in the changeset -> name of profiles
-   * that have changed values */
+  size_t   cnt = 0;
+  char   **res = 0;
 
-  char     **names = 0;
-  size_t     count = 0;
-  unique_t   unique;
+  database_generate_changes();
 
-  unique_ctor(&unique);
+  res = inifile_get_section_names(bc_state_diff, &cnt);
 
-  inifile_scan_sections(database_changes, database_get_changed_profiles_cb, &unique);
+  if( pcount ) *pcount = (int)cnt;
 
-  names = unique_steal(&unique, &count);
-
-  unique_dtor(&unique);
-
-  if( pcount ) *pcount = count;
-
-  return names;
+  return res;
 }
 
 /* ------------------------------------------------------------------------- *
@@ -1330,72 +1311,24 @@ database_free_changed_profiles(char **profiles)
  * database_get_changed_values
  * ------------------------------------------------------------------------- */
 
-typedef struct
-{
-  unique_t    uniq;
-  const char *name;
-  inifile_t  *srce;
-} database_get_changed_values_data;
-
-static int
-database_get_changed_values_cb(const inisec_t *s, const inival_t *v, void *aptr)
-{
-  database_get_changed_values_data *data = aptr;
-
-  if( !strcmp(s->is_name, data->name) )
-  {
-    unique_add(&data->uniq, v->iv_key);
-  }
-  return 0;
-}
-
 profileval_t *
 database_get_changed_values(const char *profile, int *pcount)
 {
-  /* Scan changeset for keys with changed values.
-   *
-   * Special case: if the active profile has changed,
-   * values of all keys will be included
-   *
-   * Keys that are no longer available (due to removal of
-   * configuration files for example) will be listed
-   * with empty value and datatype.
-   */
+  profileval_t *res = 0;
+  char        **key = 0;
+  int           keys = 0;
+  int           cnt = 0;
 
-  database_get_changed_values_data data;
+  database_generate_changes();
 
-  unique_ctor(&data.uniq);
+  key = inifile_get_section_keys(bc_state_diff, profile, &keys);
+  res = calloc(keys + 1, sizeof *res);
 
-  database_check_profile(&profile);
-
-  if( !strcmp(profile, database_current) &&
-      strcmp(database_current, database_previous) )
-  {
-    // after profile change we report all values
-    // for the current profile
-    data.name = FALLBACK;
-    data.srce = database_static;
-  }
-  else
-  {
-    // otherwise only changes within the named profile
-    data.name = profile;
-    data.srce = database_changes;
-  }
-
-  inifile_scan_values(data.srce, database_get_changed_values_cb, &data);
-
-  size_t        keys = 0;
-  char        **key  = unique_steal(&data.uniq, &keys);
-
-  size_t        cnt = 0;
-  profileval_t *res = calloc(keys+1, sizeof *res);
-
-  for( size_t i = 0; i < keys; ++i )
+  for( int i = 0; i < keys; ++i )
   {
     // key is transferred, rest is strdup:ed
     char       *k = key[i];
-    const char *v = database_get_value(profile, k, "");
+    const char *v = inifile_get(bc_state_diff, profile, k, "");
     const char *t = database_get_type(k, "");
     if( k != 0 && v != 0 && t != 0 )
     {
@@ -1405,12 +1338,9 @@ database_get_changed_values(const char *profile, int *pcount)
     free(k);
   }
   profileval_ctor(&res[cnt]);
+
   free(key);
-
-  unique_dtor(&data.uniq);
-
   if( pcount ) *pcount = cnt;
-
   return res;
 }
 
