@@ -435,8 +435,8 @@ database_save_custom_cb(const inisec_t *s, const inival_t *v, void *aptr)
   const char *val = v->iv_val;
   inifile_t  *ini = aptr;
 
-  // custom is empty or the same as default -> default -> not saved
-  if( !xstrnull(val) && !xstrsame(default_(prf, key), val) )
+  /* empty value means "use default inheritance" -> do not save them */
+  if( !xstrnull(val) )
   {
     inifile_set(ini, prf, key, val);
   }
@@ -1089,17 +1089,13 @@ database_set_value(const char *profile,
   {
     if( database_has_value(key) )
     {
-      const char *def = default_(profile, key);
+      const char *cus = custom_(profile, key);
       const char *cur = current_(profile, key);
       char       *use = xstrip(strdup(val ?: ""));
 
-      if( !xstrsame(cur, use) )
+      /* differs from current value, or custom value not set */
+      if( !xstrsame(cur, use) || xstrnull(cus) )
       {
-        if( xstrsame(def, use) )
-        {
-          *use = 0;
-        }
-
         // set custom data
         inifile_set(database_custom,  profile, key, use);
 
