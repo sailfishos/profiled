@@ -9,7 +9,7 @@ Name:       profiled
 # << macros
 
 Summary:    Profile daemon, manages user settings
-Version:    1.0.0
+Version:    1.0.1
 Release:    1
 Group:      System/System Control
 License:    LGPLv2.1
