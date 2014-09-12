@@ -1,3 +1,9 @@
+profiled (1.0.2) nemomobile; urgency=low
+
+  * [profiled] Do not install obsoleted backup scripts
+
+ -- Matti Kosola <matti.kosola@jollamobile.com>  Fri, 12 Sep 2014 16:35:25 +0300
+
 profiled (1.0.1) nemomobile; urgency=low
 
   * [profiled] Detach value from inheritance chain if it is explicitly set
