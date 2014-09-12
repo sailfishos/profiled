@@ -335,7 +335,7 @@ install-profiled-ini: ini/10.meego_default.ini
 	install -m755 -d $(ROOT)$(ETCDIR)/
 	install -m644 ini/10.meego_default.ini $(ROOT)$(ETCDIR)/10.meego_default.ini
 
-install-profiled:: $(addprefix install-profiled-, bin backup-config backupfw-config appkiller ini)
+install-profiled:: $(addprefix install-profiled-, bin ini)
 ifeq ($(USE_SYSTEM_BUS),y)
 	install -m755 -d $(ROOT)$(PREFIX)/share/dbus-1/system-services
 	install -m644 profiled.system.service \

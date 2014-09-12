@@ -114,13 +114,9 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 %files
 %defattr(-,root,root,-)
 # >> files
-%config(noreplace) %{_sysconfdir}/osso-backup/applications/profiled.conf
-%{_sysconfdir}/osso-cud-scripts/profiled.sh
-%{_sysconfdir}/osso-rfs-scripts/profiled.sh
 %dir %{_sysconfdir}/profiled
 %{_bindir}/%{name}
 %{_libdir}/libprofile.so.*
-%{_datadir}/backup-framework/applications/profiled.conf
 %{_datadir}/dbus-1/services/profiled.service
 # << files
 
