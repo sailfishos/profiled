@@ -250,31 +250,6 @@ static const char *custom_(const char *profile, const char *key)
 }
 
 /* ------------------------------------------------------------------------- *
- * default_  -- helper for getting default value for key
- * ------------------------------------------------------------------------- */
-
-static const char *default_(const char *profile, const char *key)
-{
-  /* - - - - - - - - - - - - - - - - - - - *
-   * profile lookup order:
-   * 1. config: "override"
-   * 2. config: caller provided
-   * 3. config: "fallback"
-   * - - - - - - - - - - - - - - - - - - - */
-
-  const char *res = 0;
-
-  if( (res = override_(key)) == 0 )
-  {
-    if( (res = config_(profile, key)) == 0 )
-    {
-      res = fallback_(key);
-    }
-  }
-  return res;
-}
-
-/* ------------------------------------------------------------------------- *
  * current_  --  helper for getting current value for key
  * ------------------------------------------------------------------------- */
 
