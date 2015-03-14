@@ -37,6 +37,7 @@
 
 #include "logging.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef LOGGING_ENABLED
 
@@ -76,11 +77,19 @@ log_emit(int level, const char *fmt, ...)
       level = log_level_promote;
     }
 
+    char *msg = 0;
+
     va_list va;
     va_start(va, fmt);
-    //vsyslog(LOG_USER | level, fmt, va);
-    vsyslog(level, fmt, va);
+    if( vasprintf(&msg, fmt, va) < 0 )
+    {
+      msg = 0;
+    }
     va_end(va);
+
+    syslog(level, "libprofile: %s", msg ?: fmt);
+
+    free(msg);
   }
 }
 
