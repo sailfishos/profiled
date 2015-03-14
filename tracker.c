@@ -386,13 +386,16 @@ profile_tracker_disconnect(void)
   {
     ENTER
     /* stop listening to profiled signals */
-    dbus_bus_remove_match(profile_tracker_con, PROFILED_MATCH, &err);
-
-    if( dbus_error_is_set(&err) )
+    if( dbus_connection_get_is_connected(profile_tracker_con) )
     {
-      log_err("%s: %s: %s\n", "dbus_bus_remove_match",
-	      err.name, err.message);
-      dbus_error_free(&err);
+      dbus_bus_remove_match(profile_tracker_con, PROFILED_MATCH, &err);
+
+      if( dbus_error_is_set(&err) )
+      {
+	log_err("%s: %s: %s\n", "dbus_bus_remove_match",
+		err.name, err.message);
+	dbus_error_free(&err);
+      }
     }
 
     /* remove message filter function */
