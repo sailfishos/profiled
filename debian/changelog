@@ -1,3 +1,9 @@
+profiled (1.0.4) nemomobile; urgency=low
+
+  * [packaging] Remove old spectacle cruft. Fixes JB#27289
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Sun, 15 Mar 2015 15:21:47 +0200
+
 profiled (1.0.3) nemomobile; urgency=low
 
   * [build] Remove ar u option
