@@ -204,7 +204,7 @@ install-%-rfs-scripts:
 	$(CC) -o $@  $^ $(LDFLAGS) $(LDLIBS)
 
 %.a:
-	$(AR) ru $@ $^
+	$(AR) r $@ $^
 
 %.pic.o : CFLAGS += -fPIC
 %.pic.o : CFLAGS += -fvisibility=hidden

@@ -127,7 +127,7 @@ client_exec_method_call(DBusMessage *msg)
 
   dbus_error_free(&err);
 
-  log_debug("%s: %s -> %s\n", "libprofile",
+  log_debug("%s -> %s\n",
              dbus_message_get_member(msg),
              (rsp == 0 ) ? "NO REPLY" :
              dbus_message_type_to_string(dbus_message_get_type(rsp)));

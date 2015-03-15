@@ -208,7 +208,7 @@ static inline void profile_track_profile(const char *profile)
 {
   if( profile_track_profile_func != 0 )
   {
-    log_debug("%s: %s - %s\n", "libprofile", __FUNCTION__, profile);
+    log_debug("%s - %s\n", __FUNCTION__, profile);
     profile_track_profile_func(profile, profile_track_profile_data);
   }
 
@@ -216,7 +216,7 @@ static inline void profile_track_profile(const char *profile)
   {
     profile_hook_t *h = &profile_hook[i];
     profile_track_profile_fn_data cb = h->user_cb;
-    log_debug("%s: %s - %s @ %p %p %p\n", "libprofile", __FUNCTION__, profile,
+    log_debug("%s - %s @ %p %p %p\n", __FUNCTION__, profile,
               h->user_cb, h->data, h->free_cb);
     if( cb ) cb(profile, h->data);
   }
@@ -233,7 +233,7 @@ static inline void profile_track_active(const char *profile,
 {
   if( profile_track_active_func != 0 )
   {
-    log_debug("%s: %s - %s: %s = %s (%s)\n", "libprofile", __FUNCTION__,
+    log_debug("%s - %s: %s = %s (%s)\n", __FUNCTION__,
               profile, key, val, type);
 
     profile_track_active_func(profile, key, val, type,
@@ -245,8 +245,8 @@ static inline void profile_track_active(const char *profile,
     profile_hook_t *h = &active_hook[i];
     profile_track_value_fn_data cb = h->user_cb;
 
-    log_debug("%s: %s - %s: %s = %s (%s)@ %p %p %p\n",
-              "libprofile", __FUNCTION__,
+    log_debug("%s - %s: %s = %s (%s)@ %p %p %p\n",
+              __FUNCTION__,
               profile, key, val, type,
               h->user_cb, h->data, h->free_cb);
 
@@ -265,7 +265,7 @@ static inline void profile_track_change(const char *profile,
 {
   if( profile_track_change_func != 0 )
   {
-    log_debug("%s: %s - %s: %s = %s (%s)\n", "libprofile", __FUNCTION__,
+    log_debug("%s - %s: %s = %s (%s)\n", __FUNCTION__,
               profile, key, val, type);
 
     profile_track_change_func(profile, key, val, type,
@@ -277,8 +277,8 @@ static inline void profile_track_change(const char *profile,
     profile_hook_t *h = &change_hook[i];
     profile_track_value_fn_data cb = h->user_cb;
 
-    log_debug("%s: %s - %s: %s = %s (%s)@ %p %p %p\n",
-              "libprofile", __FUNCTION__,
+    log_debug("%s - %s: %s = %s (%s)@ %p %p %p\n",
+              __FUNCTION__,
               profile, key, val, type,
               h->user_cb, h->data, h->free_cb);
 
@@ -386,13 +386,16 @@ profile_tracker_disconnect(void)
   {
     ENTER
     /* stop listening to profiled signals */
-    dbus_bus_remove_match(profile_tracker_con, PROFILED_MATCH, &err);
-
-    if( dbus_error_is_set(&err) )
+    if( dbus_connection_get_is_connected(profile_tracker_con) )
     {
-      log_err("%s: %s: %s: %s\n", "libprofile", "dbus_bus_remove_match",
-              err.name, err.message);
-      dbus_error_free(&err);
+      dbus_bus_remove_match(profile_tracker_con, PROFILED_MATCH, &err);
+
+      if( dbus_error_is_set(&err) )
+      {
+	log_err("%s: %s: %s\n", "dbus_bus_remove_match",
+		err.name, err.message);
+	dbus_error_free(&err);
+      }
     }
 
     /* remove message filter function */
@@ -439,7 +442,7 @@ profile_tracker_connect(void)
   /* Register message filter */
   if( !dbus_connection_add_filter(profile_tracker_con, profile_tracker_filter, 0, 0) )
   {
-    log_err("%s: %s: %s: %s\n", "libprofile", "dbus_connection_add_filter",
+    log_err("%s: %s: %s\n", "dbus_connection_add_filter",
             err.name, err.message);
     goto cleanup;
   }
@@ -449,7 +452,7 @@ profile_tracker_connect(void)
 
   if( dbus_error_is_set(&err) )
   {
-    log_err("%s: %s: %s: %s\n", "libprofile", "dbus_bus_add_match",
+    log_err("%s: %s: %s\n", "dbus_bus_add_match",
             err.name, err.message);
     goto cleanup;
   }
@@ -601,7 +604,7 @@ profile_tracker_init(void)
   profileval_t *val = 0;
 #endif
 
-  log_debug("%s: init tracker ...\n", "libprofile");
+  log_debug("init tracker ...\n");
 
   /* Establish dbus connection */
   if( profile_tracker_connect() == -1 )
@@ -641,7 +644,7 @@ profile_tracker_init(void)
   free(cur);
 #endif
 
-  log_debug("%s: init tracker -> %s\n", "libprofile",
+  log_debug("init tracker -> %s\n",
             (res == 0) ? "OK" : "FAILED");
 
   /* Flag: client wants to use tracker */
