@@ -1,3 +1,14 @@
+profiled (1.0.3) nemomobile; urgency=low
+
+  * [build] Remove ar u option
+  * [profiled] Remove dead code
+  * [libprofile] Add "libprofile:" prefix to diagnostic logging.
+    Contributes to JB#24365
+  * [libprofile] Skip match removal if D-Bus connection is closed.
+    Fixes JB#24365
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Sun, 15 Mar 2015 10:08:09 +0200
+
 profiled (1.0.2) nemomobile; urgency=low
 
   * [profiled] Do not install obsoleted backup scripts
