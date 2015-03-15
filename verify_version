@@ -16,16 +16,6 @@ if [ "$RPM_VERS" != "$DEB_VERS" ]; then
   RES=1
 fi
 
-# If available, rpm/profiled.yaml should agree with debian/changelog
-YAML_PATH=${RPM_SOURCE_DIR:-rpm}/${RPM_PACKAGE_NAME:-profiled}.yaml
-if [ -f $YAML_PATH ]; then
-  YAML_VERS=$(grep '^Version:' $YAML_PATH |sed -e 's/^.*:[[:space:]]*//')
-  if [ "$YAML_VERS" != "$DEB_VERS" ]; then
-    echo >&2 "$DEB_PATH=$DEB_VERS vs $YAML_PATH=$YAML_VERS"
-    RES=1
-  fi
-fi
-
 if [ $RES != 0 ]; then
   echo >&2 "Conflicting package versions"
 fi
