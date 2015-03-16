@@ -1,12 +1,11 @@
 Name:       profiled
 Summary:    Profile daemon, manages user settings
-Version:    1.0.4
+Version:    1.0.5
 Release:    1
 Group:      System/System Control
 License:    LGPLv2.1
 URL:        http://meego.gitorious.org/meego-middleware/profiled
 Source0:    %{name}-%{version}.tar.bz2
-Source100:  profiled.yaml
 Requires:   profiled-settings
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
