@@ -87,6 +87,7 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 %{_bindir}/%{name}
 %{_libdir}/libprofile.so.*
 %{_datadir}/dbus-1/services/profiled.service
+%{_libdir}/systemd/user/profiled.service
 
 %files doc
 %defattr(-,root,root,-)

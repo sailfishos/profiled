@@ -1,0 +1,7 @@
+[Unit]
+Description=Profile Daemon
+
+[Service]
+Type=dbus
+BusName=com.nokia.profiled
+ExecStart=/usr/bin/profiled
