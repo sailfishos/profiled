@@ -1,3 +1,4 @@
 [D-BUS Service]
 Name=com.nokia.profiled
-Exec=/usr/bin/profiled
+Exec=/bin/false
+SystemdService=profiled.service
