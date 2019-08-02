@@ -345,8 +345,8 @@ ifeq ($(USE_SYSTEM_BUS),y)
 		$(ROOT)/etc/dbus-1/system.d/profiled.conf
 else
 	install -m755 -d $(ROOT)$(PREFIX)/share/dbus-1/services
-	install -m644 profiled.service \
-		$(ROOT)$(PREFIX)/share/dbus-1/services/profiled.service
+	install -m644 com.nokia.profiled.service \
+		$(ROOT)$(PREFIX)/share/dbus-1/services/com.nokia.profiled.service
 	install -m755 -d $(ROOT)$(PREFIX)/lib/systemd/user/
 	install -m644 systemd/profiled.service \
 		$(ROOT)$(PREFIX)/lib/systemd/user/

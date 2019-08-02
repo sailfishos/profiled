@@ -86,7 +86,7 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 %dir %{_sysconfdir}/profiled
 %{_bindir}/%{name}
 %{_libdir}/libprofile.so.*
-%{_datadir}/dbus-1/services/profiled.service
+%{_datadir}/dbus-1/services/com.nokia.profiled.service
 %{_libdir}/systemd/user/profiled.service
 
 %files doc
