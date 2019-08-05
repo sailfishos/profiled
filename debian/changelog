@@ -1,3 +1,9 @@
+profiled (1.0.7) nemomobile; urgency=low
+
+  * [packaging] Rename dbus service to match service name. Contributes JB#46335
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Mon, 05 Aug 2019 09:06:58 +0300
+
 profiled (1.0.6) nemomobile; urgency=low
 
   * [systemd] Handle D-Bus autostart via systemd. JB#37678

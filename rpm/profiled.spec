@@ -1,6 +1,6 @@
 Name:       profiled
 Summary:    Profile daemon, manages user settings
-Version:    1.0.6
+Version:    1.0.7
 Release:    1
 Group:      System/System Control
 License:    LGPLv2.1
