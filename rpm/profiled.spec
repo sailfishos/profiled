@@ -1,6 +1,6 @@
 Name:       profiled
 Summary:    Profile daemon, manages user settings
-Version:    1.0.7
+Version:    1.0.8
 Release:    1
 Group:      System/System Control
 License:    BSD

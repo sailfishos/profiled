@@ -1,3 +1,9 @@
+profiled (1.0.8) nemomobile; urgency=low
+
+  * [packaging] Fix license, update URL. Contributes to JB#45486
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Wed, 07 Aug 2019 10:15:45 +0300
+
 profiled (1.0.7) nemomobile; urgency=low
 
   * [packaging] Rename dbus service to match service name. Contributes JB#46335
