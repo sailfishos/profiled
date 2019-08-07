@@ -3,8 +3,8 @@ Summary:    Profile daemon, manages user settings
 Version:    1.0.7
 Release:    1
 Group:      System/System Control
-License:    LGPLv2.1
-URL:        http://meego.gitorious.org/meego-middleware/profiled
+License:    BSD
+URL:        https://git.sailfishos.org/mer-core/profiled
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   profiled-settings
 Requires(post): /sbin/ldconfig
