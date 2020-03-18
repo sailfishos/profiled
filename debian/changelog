@@ -1,3 +1,10 @@
+profiled (1.0.9) nemomobile; urgency=low
+
+  * [profiled] Remove prototype python server and client. JB#49378
+  * [profiled] Port scripts from python2 to python3. Fixes JB#49378
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Wed, 18 Mar 2020 08:45:43 +0200
+
 profiled (1.0.8) nemomobile; urgency=low
 
   * [packaging] Fix license, update URL. Contributes to JB#45486
