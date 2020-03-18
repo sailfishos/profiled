@@ -62,6 +62,9 @@ mainloop.o: mainloop.c \
   server.h \
   sighnd.h
 
+profile-tracker.o: profile-tracker.c \
+  profile_dbus.h
+
 profileclient.o: profileclient.c \
   libprofile-internal.h \
   libprofile.h \
@@ -73,9 +76,6 @@ profiled.o: profiled.c \
   logging.h \
   mainloop.h \
   profiled_config.h
-
-profile-tracker.o: profile-tracker.c \
-  profile_dbus.h
 
 profileval.o: profileval.c \
   profiled_config.h \
