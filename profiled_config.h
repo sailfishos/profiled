@@ -42,6 +42,16 @@ extern "C" {
 } /* fool JED indentation ... */
 #endif
 
+/* Used to retry syscalls that can return EINTR. Taken from bionic */
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY(exp) ({         \
+    __typeof__(exp) _rc;                   \
+    do {                                   \
+        _rc = (exp);                       \
+    } while (_rc == -1 && errno == EINTR); \
+    _rc; })
+#endif
+
 #ifdef __cplusplus
 };
 #endif
