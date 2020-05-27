@@ -1,3 +1,9 @@
+profiled (1.0.10) nemomobile; urgency=low
+
+  * Define TEMP_FAILURE_RETRY for non-glibc systems
+
+ -- Bart Ribbers <bribbers@disroot.org>  Wed, 25 Mar 2020 10:40:28 +0300
+
 profiled (1.0.9) nemomobile; urgency=low
 
   * [profiled] Remove prototype python server and client. JB#49378
