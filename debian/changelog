@@ -1,3 +1,9 @@
+profiled (1.0.11) nemomobile; urgency=low
+
+  * [profiled] Fix aarch64 build. JB#49681
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Wed, 27 May 2020 16:39:49 +0300
+
 profiled (1.0.10) nemomobile; urgency=low
 
   * Define TEMP_FAILURE_RETRY for non-glibc systems
