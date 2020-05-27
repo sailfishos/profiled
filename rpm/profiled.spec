@@ -64,17 +64,19 @@ profiled library.
 %prep
 %setup -q -n %{name}-%{version}
 
+%define build_variables ROOT=%{buildroot} LIBDIR=%{_libdir} DLLDIR=%{_libdir} PKGCFGDIR=%{_libdir}/pkgconfig
+
 %build
-make %{_smp_mflags}
+make %{build_variables} %{_smp_mflags}
 
 %install
 rm -rf %{buildroot}
 
-make ROOT=%{buildroot} install-profiled
-make ROOT=%{buildroot} install-libprofile
-make ROOT=%{buildroot} install-libprofile-dev
-make ROOT=%{buildroot} install-libprofile-doc
-make ROOT=%{buildroot} install-profileclient
+make %{build_variables} install-profiled
+make %{build_variables} install-libprofile
+make %{build_variables} install-libprofile-dev
+make %{build_variables} install-libprofile-doc
+make %{build_variables} install-profileclient
 rm %{buildroot}/%{_libdir}/libprofile.a
 
 %post -p /sbin/ldconfig
@@ -87,7 +89,7 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 %{_bindir}/%{name}
 %{_libdir}/libprofile.so.*
 %{_datadir}/dbus-1/services/com.nokia.profiled.service
-%{_libdir}/systemd/user/profiled.service
+%{_userunitdir}/profiled.service
 
 %files doc
 %defattr(-,root,root,-)
