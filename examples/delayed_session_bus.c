@@ -3,6 +3,7 @@
 ** This file is part of profile-qt
 **
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2020 Jolla Ltd.
 ** All rights reserved.
 **
 ** Contact: Sakari Poussa <sakari.poussa@nokia.com>
@@ -38,7 +39,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
-#include <dbus/dbus-glib-lowlevel.h>
+#include "../dbus-gmain/dbus-gmain.h"
 #include <profiled/libprofile.h>
 
 static char           *ex_busaddr    = NULL;
@@ -69,7 +70,7 @@ ex_init(void)
     goto cleanup;
   }
 
-  dbus_connection_setup_with_g_main(ex_connection, NULL);
+  dbus_gmain_set_up_connection(ex_connection, NULL);
   dbus_connection_set_exit_on_disconnect(ex_connection, 0);
 
   res = 0;

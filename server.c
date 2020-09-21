@@ -3,6 +3,7 @@
 ** This file is part of profile-qt
 **
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2020 Jolla Ltd.
 ** All rights reserved.
 **
 ** Contact: Sakari Poussa <sakari.poussa@nokia.com>
@@ -48,7 +49,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <dbus/dbus-glib-lowlevel.h>
+#include "dbus-gmain/dbus-gmain.h"
 
 #ifndef DBUS_ERROR_INIT
 # define DBUS_ERROR_INIT { NULL, NULL, TRUE, 0, 0, 0, 0, NULL }
@@ -972,7 +973,7 @@ server_init(void)
    * attach connection to mainloop
    * - - - - - - - - - - - - - - - - - - - */
 
-  dbus_connection_setup_with_g_main(server_bus, NULL);
+  dbus_gmain_set_up_connection(server_bus, NULL);
   dbus_connection_set_exit_on_disconnect(server_bus, 0);
 
   /* - - - - - - - - - - - - - - - - - - - *

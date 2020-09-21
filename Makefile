@@ -33,6 +33,7 @@ CUD_DIR      ?= /etc/osso-cud-scripts
 RFS_DIR      ?= /etc/osso-rfs-scripts
 
 DOXYDIR := doxydir
+DBUS_GMAIN_DIR := dbus-gmain
 
 SO ?= .so.0
 
@@ -73,7 +74,7 @@ LDLIBS   += -Wl,--as-needed
 
 # flags from pkgtool
 
-PKG_NAMES    := dbus-glib-1 dbus-1 glib-2.0
+PKG_NAMES    := dbus-1 glib-2.0
 PKG_CFLAGS   := $(shell pkg-config --cflags $(PKG_NAMES))
 PKG_LDLIBS   := $(shell pkg-config --libs   $(PKG_NAMES))
 
@@ -106,6 +107,23 @@ CPPFLAGS += -D LOGGING_CHECK1ST# level check before args eval
 # ----------------------------------------------------------------------------
 # Top Level Targets
 # ----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+# DBUS_GMAIN
+# ----------------------------------------------------------------------------
+
+# The dbus-gmain submodule contains sources that have
+# issues and do not compile cleanly. As the content is
+# what it is, silence warnings etc when compiling source
+# files from there...
+
+DBUS_GMAIN_CPPFLAGS += -I.
+DBUS_GMAIN_CFLAGS   += -Wno-unused-parameter
+DBUS_GMAIN_CFLAGS   += -Wno-cast-function-type
+DBUS_GMAIN_CFLAGS   += -Wno-missing-field-initializers
+
+$(DBUS_GMAIN_DIR)/%.o : CPPFLAGS += $(DBUS_GMAIN_CPPFLAGS)
+$(DBUS_GMAIN_DIR)/%.o : CFLAGS   += $(DBUS_GMAIN_CFLAGS)
 
 TARGETS += libprofile.a
 TARGETS += libprofile$(SO)
@@ -259,8 +277,8 @@ profiled_src = \
   xutil.c\
   profileval.c
 
-profiled_obj = $(profiled_src:.c=.o)
-
+profiled_obj  = $(profiled_src:.c=.o)
+profiled_obj += $(DBUS_GMAIN_DIR)/dbus-gmain.o
 profiled : $(profiled_obj)
 profiled.cflow : $(profiled_src)
 
@@ -276,7 +294,8 @@ libprofile_src =\
  profileval.c\
  logging_client.c
 
-libprofile_obj = $(libprofile_src:.c=.o)
+libprofile_obj  = $(libprofile_src:.c=.o)
+libprofile_obj += $(DBUS_GMAIN_DIR)/dbus-gmain.o
 
 libprofile$(SO) : $(libprofile_obj:.o=.pic.o)
 
@@ -286,9 +305,9 @@ libprofile.a : $(libprofile_obj)
 # profileclient
 # ----------------------------------------------------------------------------
 
-profileclient_src = profileclient.c
-profileclient_obj = $(profileclient_src:.c=.o)
-
+profileclient_src  = profileclient.c
+profileclient_obj  = $(profileclient_src:.c=.o)
+profileclient_obj +=$(DBUS_GMAIN_DIR)/dbus-gmain.o
 #profileclient : CFLAGS += -Wno-missing-prototypes
 profileclient : $(profileclient_obj) libprofile$(SO)
 
@@ -304,14 +323,14 @@ profileclient.o: CFLAGS += -Wno-deprecated-declarations
 profiletracker_src = profile-tracker.c logging.c
 profiletracker_obj = $(profiletracker_src:.c=.o)
 
-profile-tracker : $(profiletracker_obj) libprofile$(SO)
+profile-tracker : $(profiletracker_obj) libprofile$(SO) $(DBUS_GMAIN_DIR)/dbus-gmain.o
 profile-tracker.cflow : $(profiletracker_src) $(libprofile_src)
 
 # ----------------------------------------------------------------------------
 # camera-example1
 # ----------------------------------------------------------------------------
 
-camera-example1 : camera-example1.o libprofile$(SO)
+camera-example1 : camera-example1.o libprofile$(SO) $(DBUS_GMAIN_DIR)/dbus-gmain.o
 
 # ----------------------------------------------------------------------------
 # profiled.deb
@@ -400,10 +419,13 @@ install-libprofile-doc:: $(addprefix install-libprofile-doc-, html man)
 # Dependency Scanning
 # ----------------------------------------------------------------------------
 
+# All sources, except ones from gmain git submodule
+DEPEND_SOURCES = $(filter-out $(DBUS_GMAIN_DIR)/%.c, $(wildcard *.c */*.c */*/*.c))
+
 .PHONY: depend
 
 depend::
-	gcc -MM $(CPPFLAGS) *.c | ./depend_filter.py > .depend
+	gcc -MM $(CPPFLAGS) $(DEPEND_SOURCES) | ./depend_filter.py > .depend
 
 ifneq ($(MAKECMDGOALS),depend)
 include .depend
@@ -452,3 +474,7 @@ normalize:
 	crlf -t -e -k debian/changelog
 	crlf -M examples/Makefile
 	crlf -a examples/*.[ch]
+
+# Local Variables:
+# indent-tabs-mode: t
+# End:
