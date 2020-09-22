@@ -5,8 +5,6 @@
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 **
-** Contact: Sakari Poussa <sakari.poussa@nokia.com>
-**
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions are met:
 **
