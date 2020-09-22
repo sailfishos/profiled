@@ -100,6 +100,7 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 
 %files devel
 %defattr(-,root,root,-)
+%license LICENSE
 %{_includedir}/%{name}/*
 %{_libdir}/libprofile.so
 %{_libdir}/pkgconfig/profile.pc
