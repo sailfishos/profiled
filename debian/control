@@ -4,7 +4,6 @@ Priority: optional
 Maintainer: Simo Piiroinen <simo.piiroinen@nokia.com>
 Build-Depends: debhelper (>= 4.1.0),
  libdbus-1-dev,
- libdbus-glib-1-dev,
  libglib2.0-dev,
  doxygen
 Standards-Version: 3.7.2
