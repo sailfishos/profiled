@@ -2,7 +2,6 @@ Name:       profiled
 Summary:    Profile daemon, manages user settings
 Version:    1.0.11
 Release:    1
-Group:      System/System Control
 License:    BSD
 URL:        https://git.sailfishos.org/mer-core/profiled
 Source0:    %{name}-%{version}.tar.bz2
@@ -10,7 +9,6 @@ Requires:   profiled-settings
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(dbus-1)
-BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  doxygen
 
@@ -26,7 +24,6 @@ active clients can be avare of changes without polling.
 
 %package doc
 Summary:    API documentation for libprofile
-Group:      Documentation
 Requires:   %{name} = %{version}-%{release}
 
 %description doc
@@ -36,7 +33,6 @@ for communication with profiled.
 
 %package -n profileclient
 Summary:    Command line test tool for profiled
-Group:      Development/Tools
 Requires:   %{name} = %{version}-%{release}
 
 %description -n profileclient
@@ -45,7 +41,6 @@ profiles and profile values.
 
 %package settings-default
 Summary:    Default settings for profiled
-Group:      System/Libraries
 Requires:   %{name} = %{version}-%{release}
 Provides:   profiled-settings
 
@@ -54,7 +49,6 @@ Default settings for profiled.
 
 %package devel
 Summary:    Development files for libprofile
-Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -106,6 +100,7 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 
 %files devel
 %defattr(-,root,root,-)
+%license LICENSE
 %{_includedir}/%{name}/*
 %{_libdir}/libprofile.so
 %{_libdir}/pkgconfig/profile.pc

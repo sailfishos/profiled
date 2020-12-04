@@ -3,9 +3,8 @@
 ** This file is part of profile-qt
 **
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2020 Jolla Ltd.
 ** All rights reserved.
-**
-** Contact: Sakari Poussa <sakari.poussa@nokia.com>
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions are met:
@@ -40,7 +39,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <dbus/dbus-glib-lowlevel.h>
+#include "dbus-gmain/dbus-gmain.h"
 
 #include "profile_dbus.h"
 
@@ -134,7 +133,7 @@ tracker_init(void)
   }
 #endif
 
-  dbus_connection_setup_with_g_main(tracker_bus, NULL);
+  dbus_gmain_set_up_connection(tracker_bus, NULL);
   dbus_connection_set_exit_on_disconnect(tracker_bus, 0);
 
   /* - - - - - - - - - - - - - - - - - - - *

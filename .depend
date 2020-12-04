@@ -62,9 +62,6 @@ mainloop.o: mainloop.c \
   server.h \
   sighnd.h
 
-profile-tracker.o: profile-tracker.c \
-  profile_dbus.h
-
 profileclient.o: profileclient.c \
   libprofile-internal.h \
   libprofile.h \
@@ -76,6 +73,10 @@ profiled.o: profiled.c \
   logging.h \
   mainloop.h \
   profiled_config.h
+
+profile-tracker.o: profile-tracker.c \
+  profile_dbus.h \
+  dbus-gmain/dbus-gmain.h
 
 profileval.o: profileval.c \
   profiled_config.h \
@@ -90,7 +91,8 @@ server.o: server.c \
   profile_dbus.h \
   profiled_config.h \
   profileval.h \
-  server.h
+  server.h \
+  dbus-gmain/dbus-gmain.h
 
 sighnd.o: sighnd.c \
   logging.h \
@@ -109,7 +111,8 @@ tracker.o: tracker.c \
   logging.h \
   profile_dbus.h \
   profiled_config.h \
-  profileval.h
+  profileval.h \
+  dbus-gmain/dbus-gmain.h
 
 unique.o: unique.c \
   profiled_config.h \
@@ -119,4 +122,11 @@ xutil.o: xutil.c \
   logging.h \
   profiled_config.h \
   xutil.h
+
+callbacks_without_mainloop.o: examples/callbacks_without_mainloop.c
+
+delayed_session_bus.o: examples/delayed_session_bus.c \
+  examples/../dbus-gmain/dbus-gmain.h
+
+multiple_callbacks.o: examples/multiple_callbacks.c
 
