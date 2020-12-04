@@ -1,6 +1,6 @@
 Name:       profiled
 Summary:    Profile daemon, manages user settings
-Version:    1.0.11
+Version:    1.0.12
 Release:    1
 License:    BSD
 URL:        https://git.sailfishos.org/mer-core/profiled

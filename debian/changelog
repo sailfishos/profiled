@@ -1,3 +1,14 @@
+profiled (1.0.12) nemomobile; urgency=low
+
+  * [profiled] Use correct Emacs File-Local-Variable
+  * [profiled] Use dbus-gmain instead of dbus-glib. JB#51115
+  * [packaging] Remove deprecated rpm group tag
+  * [profiled] Remove contact adress from source code
+  * [packaging] Add %license
+  * [debian] Remove dbus-glib dependency. JB#51115
+
+ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Fri, 04 Dec 2020 13:43:55 +0200
+
 profiled (1.0.11) nemomobile; urgency=low
 
   * [profiled] Fix aarch64 build. JB#49681
