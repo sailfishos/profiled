@@ -17,11 +17,11 @@
 * Tue Feb 08 2011 Gabor Juhasz <ext-gabor.2.juhasz@nokia.com> - 0.30.2.1
 - Added missing meego-handset-sound-theme dependency to spec file
 
-* Fri Feb 03 2011 Gabor Juhasz <ext-gabor.2.juhasz@nokia.com> - 0.30.2.1
+* Thu Feb 03 2011 Gabor Juhasz <ext-gabor.2.juhasz@nokia.com> - 0.30.2.1
 - FEA#2889
 - BMC#12855
 
-* Fri Feb 03 2011 Gabor Juhasz <ext-gabor.2.juhasz@nokia.com> - 0.30.2.1
+* Thu Feb 03 2011 Gabor Juhasz <ext-gabor.2.juhasz@nokia.com> - 0.30.2.1
 - Adding missing ini file : 10.meego_default.ini into profiled package
 - Removing debian/copyright & changelog files from spec file
 - Adding new ini file to spec 
