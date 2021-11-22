@@ -3,7 +3,7 @@ Summary:    Profile daemon, manages user settings
 Version:    1.0.12
 Release:    1
 License:    BSD
-URL:        https://git.sailfishos.org/mer-core/profiled
+URL:        https://github.com/sailfishos/profiled
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   profiled-settings
 Requires(post): /sbin/ldconfig
@@ -79,6 +79,7 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 
 %files
 %defattr(-,root,root,-)
+%license LICENSE
 %dir %{_sysconfdir}/profiled
 %{_bindir}/%{name}
 %{_libdir}/libprofile.so.*
