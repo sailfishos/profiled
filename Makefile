@@ -357,8 +357,8 @@ install-profiled-ini: ini/10.meego_default.ini
 install-profiled:: $(addprefix install-profiled-, bin ini)
 ifeq ($(USE_SYSTEM_BUS),y)
 	install -m755 -d $(ROOT)$(PREFIX)/share/dbus-1/system-services
-	install -m644 profiled.system.service \
-		$(ROOT)$(PREFIX)/share/dbus-1/system-services/profiled.service
+	install -m644 com.nokia.profiled.service \
+		$(ROOT)$(PREFIX)/share/dbus-1/system-services/com.nokia.profiled.service
 	install -m755 -d $(ROOT)/etc/dbus-1/system.d
 	install -m644 profiled.system.conf \
 		$(ROOT)/etc/dbus-1/system.d/profiled.conf
