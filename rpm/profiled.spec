@@ -1,6 +1,6 @@
 Name:       profiled
 Summary:    Profile daemon, manages user settings
-Version:    1.0.12
+Version:    1.0.14
 Release:    1
 License:    BSD
 URL:        https://github.com/sailfishos/profiled

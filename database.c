@@ -307,11 +307,18 @@ cleanup:
   return res;
 }
 
-/* ========================================================================= *
- * FIXME: horrible $HOME/.profiled access hacks
- * ========================================================================= */
-
 static const char *datadir(void)
+{
+  static gchar *path = NULL;
+
+  if( !path )
+  {
+    path = g_strdup_printf("%s/profiled", g_get_user_config_dir() ?: "/tmp");
+  }
+  return path;
+}
+
+static const char *legacydir(void)
 {
   static char path[256] = "";
 
@@ -348,9 +355,9 @@ static int prepdir(char *path)
       {
         log_err("%s: mkdir: %s\n", path, strerror(errno));
       }
-          return isdir(path) ? 0 : -1;
+      return isdir(path) ? 0 : -1;
     }
-      return -1;
+    return -1;
   }
   return 0;
 }
@@ -728,6 +735,88 @@ database_save_later(int secs)
   }
 }
 
+static
+int
+copy_file(const char *source, const char *destination)
+{
+  FILE *src, *dest;
+  int ch;
+  src = fopen(source, "r");
+  if( src == NULL )
+  {
+    log_err("File open failed: %s\n", source);
+    return -1;
+  }
+  dest = fopen(destination, "w");
+  if( dest == NULL )
+  {
+    log_err("File open failed: %s\n", destination);
+    fclose(src);
+    return -1;
+  }
+  while( (ch = fgetc(src)) != EOF )
+  {
+    fputc(ch, dest);
+  }
+  fclose(src);
+  fclose(dest);
+  return 0;
+}
+
+static
+void
+migrate_configs_hard_way(const char *legacydir, const char *currentdir)
+{
+  DIR *dptr;
+  struct dirent *dir;
+  char srcname[260], destname[260];
+  int result = 0;
+  if( mkdir(currentdir, 0755) < 0 && errno != EEXIST )
+  {
+    log_err("%s: mkdir: %s\n", currentdir, strerror(errno));
+    return;
+  }
+  dptr = opendir(legacydir);
+  if( !dptr )
+  {
+    log_err("Directory open failed: %s %s\n", legacydir, strerror(errno));
+    return;
+  }
+  while( (dir = readdir(dptr)) != NULL )
+  {
+    if( dir->d_type == DT_REG )
+    {
+      snprintf(srcname, sizeof srcname, "%s/%s", legacydir, dir->d_name);
+      snprintf(destname, sizeof destname, "%s/%s", currentdir, dir->d_name);
+      if( copy_file(srcname, destname) < 0 )
+      {
+        result = -1;
+        continue;
+      }
+      if( remove(srcname) != 0 )
+      {
+        log_warning("Failed to remove %s with %s\n", srcname, strerror(errno));
+      }
+    }
+  }
+  closedir(dptr);
+  if( result < 0 || remove(legacydir) != 0 )
+  {
+    log_warning("Failed to remove %s with %s\n", legacydir, strerror(errno));
+  }
+}
+
+static
+void
+migrate_configs(const char *legacydir, const char *currentdir)
+{
+  if( rename(legacydir, currentdir) < 0 )
+  {
+    log_warning("Rename failed with %s. Falling back to copy/delete.\n", strerror(errno));
+    migrate_configs_hard_way(legacydir, currentdir);
+  }
+}
+
 /* ------------------------------------------------------------------------- *
  * database_init
  * ------------------------------------------------------------------------- */
@@ -742,6 +831,10 @@ database_init(void)
   custom_work  = xstrfmt("%s.tmp", custom_path);
   custom_back  = xstrfmt("%s.bak", custom_path);
 
+  if( access(datadir(), F_OK) != 0 && access(legacydir(), F_OK) == 0 )
+  {
+    migrate_configs(legacydir(), datadir());
+  }
   xstrset(&database_previous, *database_builtins);
   xstrset(&database_current,  *database_builtins);
 
