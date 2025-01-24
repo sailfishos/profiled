@@ -61,11 +61,9 @@ profiled library.
 %define build_variables ROOT=%{buildroot} LIBDIR=%{_libdir} DLLDIR=%{_libdir} PKGCFGDIR=%{_libdir}/pkgconfig
 
 %build
-make %{build_variables} %{_smp_mflags}
+%make_build %{build_variables}
 
 %install
-rm -rf %{buildroot}
-
 make %{build_variables} install-profiled
 make %{build_variables} install-libprofile
 make %{build_variables} install-libprofile-dev
@@ -78,7 +76,6 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root,-)
 %license LICENSE
 %dir %{_sysconfdir}/profiled
 %{_bindir}/%{name}
@@ -87,20 +84,16 @@ rm %{buildroot}/%{_libdir}/libprofile.a
 %{_userunitdir}/profiled.service
 
 %files doc
-%defattr(-,root,root,-)
 %{_docdir}/libprofile-doc/html/*
 %{_mandir}/man3/*
 
 %files -n profileclient
-%defattr(-,root,root,-)
 %{_bindir}/profileclient
 
 %files settings-default
-%defattr(-,root,root,-)
 %{_sysconfdir}/profiled/10.meego_default.ini
 
 %files devel
-%defattr(-,root,root,-)
 %license LICENSE
 %{_includedir}/%{name}/*
 %{_libdir}/libprofile.so

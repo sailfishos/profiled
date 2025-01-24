@@ -130,7 +130,15 @@ profile_hook_rem(profile_hook_t **parr, size_t *pcnt,
       arr[i] = arr[i+1];
     }
 
-    arr = realloc(arr, cnt * sizeof *arr);
+    if( cnt == 0 )
+    {
+      free(arr);
+      arr = NULL;
+    }
+    else
+    {
+      arr = realloc(arr, cnt * sizeof *arr);
+    }
     res = 1;
     break;
   }
